@@ -1,0 +1,24 @@
+{
+  "name": "express-blog",
+  "version": "1.0.0",
+  "description": "\"# express-blog\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zamlahani/express-blog.git"
+  },
+  "keywords": [],
+  "author": "Khussal Zamlahani",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zamlahani/express-blog/issues"
+  },
+  "homepage": "https://github.com/zamlahani/express-blog#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
