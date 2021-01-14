@@ -5,7 +5,7 @@ const saltRounds = 10;
 
 async function index(req, res) {
   const result = await UserModel.find({})
-  res.json(result)
+  res.json(result.map((({ fullName, username, _id }) => ({ fullName, username, _id }))))
   // console.log(req.user);
 }
 
