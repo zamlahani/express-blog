@@ -6,6 +6,7 @@ const saltRounds = 10;
 async function index(req, res) {
   const result = await UserModel.find({})
   res.json(result)
+  // console.log(req.user);
 }
 
 async function store(req, res) {
