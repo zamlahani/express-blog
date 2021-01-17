@@ -10,7 +10,7 @@ async function login(req, res) {
   if (foundUser) {
     bcrypt.compare(password, foundUser.password, function (err, result) {
       if (result) {
-        var token = jwt.sign({ username }, secretKey);
+        var token = jwt.sign({ username, id: foundUser._id }, secretKey);
         res.json({ status: 'success', token })
       } else {
         res.status(403).json({ status: 'wrongPassword' })
