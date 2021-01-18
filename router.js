@@ -16,6 +16,7 @@ router.put('/users/:id', userController.update);
 router.put('/change-password/:id', userController.changePassword);
 router.post('/auth/login', authController.login);
 router.post('/upload', uploadController.index);
+router.get('/posts', postController.index);
 router.post('/posts', postController.store);
 
 module.exports = router;

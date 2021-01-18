@@ -2,6 +2,16 @@ const slug = require('slug')
 const sanitizeHtml = require('sanitize-html');
 const PostModel = require('../../models/post')
 
+function index(req, res) {
+  const { user: { id } } = req
+  // console.log(req.user);
+  PostModel.find({ authorId: id })
+    .then(result => {
+      res.json(result)
+    })
+    .catch(err => console.error(err))
+}
+
 async function store(req, res) {
   const { body: { title = '', body = '' }, user: { id } } = req
   const cleanBody = sanitizeHtml(body)
@@ -29,4 +39,4 @@ async function store(req, res) {
   }
 }
 
-module.exports = { store }
+module.exports = { index, store }
