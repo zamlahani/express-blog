@@ -14,21 +14,17 @@ function index(req, res) {
 
 function show(req, res) {
   const { params: { id }, user: { id: userId } } = req
-  if (id) {
-    PostModel.findById(id)
-      .then(result => {
-        if (result.authorId === userId) {
-          res.json(result)
-        } else {
-          res.sendStatus(403)
-        }
-      })
-      .catch(err => {
-        res.sendStatus(404)
-      })
-  } else {
-    res.sendStatus(404)
-  }
+  PostModel.findById(id)
+    .then(result => {
+      if (result.authorId === userId) {
+        res.json(result)
+      } else {
+        res.sendStatus(403)
+      }
+    })
+    .catch(err => {
+      res.sendStatus(404)
+    })
 }
 
 async function store(req, res) {
@@ -58,14 +54,15 @@ async function store(req, res) {
   }
 }
 
-function destroy(req, res) {
-  const { params: { id }, user: { id: userId } } = req
-  if (id) {
+function update(req, res) {
+  const { body: { title = '', body = '', }, params: { id }, user: { id: userId } } = req
+  const cleanBody = sanitizeHtml(body)
+  if (title) {
     PostModel.findById(id)
       .then(result => {
         if (result.authorId === userId) {
-          PostModel.findByIdAndDelete(id, function () {
-            res.json({ status: 'success' });
+          PostModel.findByIdAndUpdate(id, { title, body: cleanBody, lastModified: Date.now() }, function (params) {
+            res.json({ status: 'success' })
           })
         } else {
           res.sendStatus(403)
@@ -75,8 +72,25 @@ function destroy(req, res) {
         res.sendStatus(404)
       })
   } else {
-    res.sendStatus(404)
+    res.status(403).send({ status: 'noTitle' })
   }
 }
 
-module.exports = { index, store, show, destroy }
+function destroy(req, res) {
+  const { params: { id }, user: { id: userId } } = req
+  PostModel.findById(id)
+    .then(result => {
+      if (result.authorId === userId) {
+        PostModel.findByIdAndDelete(id, function () {
+          res.json({ status: 'success' });
+        })
+      } else {
+        res.sendStatus(403)
+      }
+    })
+    .catch(err => {
+      res.sendStatus(404)
+    })
+}
+
+module.exports = { index, store, show, update, destroy }
