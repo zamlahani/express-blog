@@ -12,6 +12,22 @@ function index(req, res) {
     .catch(err => console.error(err))
 }
 
+function show(req, res) {
+  const { params: { id }, user: { id: userId } } = req
+  if (id) {
+    PostModel.findById(id)
+      .then(result => {
+        if (result.authorId === userId) {
+          res.json(result)
+        } else {
+          res.sendStatus(403)
+        }
+      })
+  } else {
+    res.sendStatus(404)
+  }
+}
+
 async function store(req, res) {
   const { body: { title = '', body = '' }, user: { id } } = req
   const cleanBody = sanitizeHtml(body)
@@ -39,4 +55,4 @@ async function store(req, res) {
   }
 }
 
-module.exports = { index, store }
+module.exports = { index, store, show }
