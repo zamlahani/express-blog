@@ -9,7 +9,7 @@ async function index(req, res) {
   // console.log(req.user);
 }
 
-async function store(req, res) {
+function store(req, res) {
   const { body: { fullName, username, password } } = req
   bcrypt.hash(password, saltRounds, async function (err, hash) {
     if (err) {
@@ -24,20 +24,36 @@ async function store(req, res) {
   });
 }
 
-async function update(req, res) {
-  const { body: { fullName, username, password }, params: { id } } = req
-  bcrypt.hash(password, saltRounds, async function (hashErr, hash) {
-    if (hashErr) {
-      res.sendStatus(403)
+function update(req, res) {
+  const { body: { fullName, username }, params: { id } } = req
+  UserModel.updateOne({ _id: id }, { fullName, username }, { runValidators: true }, function (err, result) {
+    if (err) {
+      res.sendStatus(404)
+    } else {
+      res.send({ status: 'success' })
     }
-    UserModel.updateOne({ _id: id }, { fullName, username, password: hash }, { runValidators: true }, function (err, result) {
-      if (err) {
-        res.sendStatus(403)
-      } else {
-        res.send({ status: 'success' })
-      }
-    });
   });
 }
 
-module.exports = { index, store, update }
+function changePassword(req, res) {
+  const { body, params: { id } } = req
+  const { oldPassword, newPassword } = body
+  if (newPassword && id) {
+    bcrypt.hash(newPassword, saltRounds, async function (err, hash) {
+      if (err) {
+        res.sendStatus(403)
+      }
+      UserModel.updateOne({ _id: id }, { password: hash }, { runValidators: true }, function (err, result) {
+        if (err) {
+          res.sendStatus(404)
+        } else {
+          res.send({ status: 'success' })
+        }
+      });
+    });
+  } else {
+    res.status(403).send({ reqBody: { ...body } })
+  }
+}
+
+module.exports = { index, store, update, changePassword }
