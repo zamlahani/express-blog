@@ -23,6 +23,9 @@ function show(req, res) {
           res.sendStatus(403)
         }
       })
+      .catch(err => {
+        res.sendStatus(404)
+      })
   } else {
     res.sendStatus(404)
   }
@@ -67,6 +70,9 @@ function destroy(req, res) {
         } else {
           res.sendStatus(403)
         }
+      })
+      .catch(err => {
+        res.sendStatus(404)
       })
   } else {
     res.sendStatus(404)
