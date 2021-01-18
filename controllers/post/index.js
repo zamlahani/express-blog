@@ -55,4 +55,22 @@ async function store(req, res) {
   }
 }
 
-module.exports = { index, store, show }
+function destroy(req, res) {
+  const { params: { id }, user: { id: userId } } = req
+  if (id) {
+    PostModel.findById(id)
+      .then(result => {
+        if (result.authorId === userId) {
+          PostModel.findByIdAndDelete(id, function () {
+            res.json({ status: 'success' });
+          })
+        } else {
+          res.sendStatus(403)
+        }
+      })
+  } else {
+    res.sendStatus(404)
+  }
+}
+
+module.exports = { index, store, show, destroy }

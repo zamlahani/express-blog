@@ -18,6 +18,7 @@ router.post('/auth/login', authController.login);
 router.post('/upload', uploadController.index);
 router.get('/posts', postController.index);
 router.get('/posts/:id', postController.show);
+router.delete('/posts/:id', postController.destroy);
 router.post('/posts', postController.store);
 
 module.exports = router;
