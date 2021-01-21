@@ -31,7 +31,7 @@ function update(req, res) {
     body: { fullName, username },
     params: { id },
   } = req;
-  UserModel.updateOne({ _id: id }, { fullName, username }, { runValidators: true }, function (err, result) {
+  UserModel.updateOne({ _id: id }, { fullName, username }, function (err, result) {
     if (err) {
       res.sendStatus(404);
     } else {
@@ -51,7 +51,7 @@ function changePassword(req, res) {
       if (err) {
         res.sendStatus(403);
       }
-      UserModel.updateOne({ _id: id }, { password: hash }, { runValidators: true }, function (err, result) {
+      UserModel.updateOne({ _id: id }, { password: hash }, function (err, result) {
         if (err) {
           res.sendStatus(404);
         } else {
