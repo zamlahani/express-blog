@@ -3,11 +3,11 @@ const mongoose = require('mongoose');
 const jwt = require('express-jwt');
 const path = require('path');
 const router = require('./router');
-const { secretKey } = require('./constants');
+const { secretKey, dbUrl } = require('./constants');
 const app = express();
 const port = +process.env.PORT || 8080;
 
-mongoose.connect('mongodb://localhost:27017/express-blog', {
+mongoose.connect(dbUrl, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
