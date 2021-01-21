@@ -9,6 +9,6 @@ const mediaSchema = new mongoose.Schema({
   uploadedAt: { type: Date, default: Date.now },
 });
 
-const MediaModel = mongoose.model('media', mediaSchema);
+const Media = mongoose.model('Media', mediaSchema);
 
-module.exports = MediaModel;
+module.exports = Media;

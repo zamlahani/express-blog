@@ -1,10 +1,10 @@
-const UserModel = require('../../models/user');
+const User = require('../../models/user');
 const bcrypt = require('bcrypt');
 
 const saltRounds = 10;
 
 async function index(req, res) {
-  const result = await UserModel.find({});
+  const result = await User.find({});
   res.json(result.map(({ fullName, username, _id }) => ({ fullName, username, _id })));
   // console.log(req.user);
 }
@@ -18,10 +18,10 @@ function store(req, res) {
       res.sendStatus(403);
     }
     try {
-      await UserModel.create({ fullName, username, password: hash });
+      await User.create({ fullName, username, password: hash });
       res.json({ status: 'success' });
     } catch (err) {
-      res.sendStatus(403);
+      res.status(500).json({ error: err });
     }
   });
 }
@@ -31,7 +31,7 @@ function update(req, res) {
     body: { fullName, username },
     params: { id },
   } = req;
-  UserModel.updateOne({ _id: id }, { fullName, username }, function (err, result) {
+  User.updateOne({ _id: id }, { fullName, username }, function (err, result) {
     if (err) {
       res.sendStatus(404);
     } else {
@@ -51,7 +51,7 @@ function changePassword(req, res) {
       if (err) {
         res.sendStatus(403);
       }
-      UserModel.updateOne({ _id: id }, { password: hash }, function (err, result) {
+      User.updateOne({ _id: id }, { password: hash }, function (err, result) {
         if (err) {
           res.sendStatus(404);
         } else {

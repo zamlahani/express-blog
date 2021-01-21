@@ -1,13 +1,13 @@
 const slug = require('slug');
 const sanitizeHtml = require('sanitize-html');
-const PostModel = require('../../models/post');
+const Post = require('../../models/post');
 
 function index(req, res) {
   const {
     user: { id },
   } = req;
   // console.log(req.user);
-  PostModel.find({ authorId: id })
+  Post.find({ authorId: id })
     .then((result) => {
       res.json(result);
     })
@@ -19,7 +19,7 @@ function show(req, res) {
     params: { id },
     user: { id: userId },
   } = req;
-  PostModel.findById(id)
+  Post.findById(id)
     .then((result) => {
       if (result.authorId === userId) {
         res.json(result);
@@ -41,17 +41,17 @@ async function store(req, res) {
   if (title) {
     let i = 0;
     let slugged = slug(title);
-    let foundPost = await PostModel.findOne({ slug: slugged });
+    let foundPost = await Post.findOne({ slug: slugged });
     while (foundPost) {
       i++;
       slugged = slug(title + '-' + i);
       try {
-        foundPost = await PostModel.findOne({ slug: slugged });
+        foundPost = await Post.findOne({ slug: slugged });
       } catch (err) {
         console.error(err);
       }
     }
-    PostModel.create({
+    Post.create({
       title,
       body: cleanBody,
       slug: slugged,
@@ -77,10 +77,10 @@ function update(req, res) {
   } = req;
   const cleanBody = sanitizeHtml(body);
   if (title) {
-    PostModel.findById(id)
+    Post.findById(id)
       .then((result) => {
         if (result.authorId === userId) {
-          PostModel.findByIdAndUpdate(id, { title, body: cleanBody, lastModified: Date.now() }, function (params) {
+          Post.findByIdAndUpdate(id, { title, body: cleanBody, lastModified: Date.now() }, function (params) {
             res.json({ status: 'success' });
           });
         } else {
@@ -100,10 +100,10 @@ function destroy(req, res) {
     params: { id },
     user: { id: userId },
   } = req;
-  PostModel.findById(id)
+  Post.findById(id)
     .then((result) => {
       if (result.authorId === userId) {
-        PostModel.findByIdAndDelete(id, function () {
+        Post.findByIdAndDelete(id, function () {
           res.json({ status: 'success' });
         });
       } else {

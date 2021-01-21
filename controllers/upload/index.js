@@ -3,7 +3,7 @@ const path = require('path');
 const Jimp = require('jimp');
 const formidable = require('formidable');
 const { root } = require('../../constants');
-const MediaModel = require('../../models/media');
+const Media = require('../../models/media');
 
 function index(req, res) {
   // console.log(req.files);
@@ -33,7 +33,7 @@ function index(req, res) {
             // console.log("🚀 ~ file: index.js ~ line 34 ~ .then ~ results", results)
             const clientPath = target.replace('public', 'static').replace(/\\/g, '/');
             const { description = '' } = fields;
-            MediaModel.create({
+            Media.create({
               fileName,
               description,
               ext,
