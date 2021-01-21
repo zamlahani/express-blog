@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const jwt = require('express-jwt');
-const fileUpload = require('express-fileupload');
 const path = require('path');
 const router = require('./router');
 const { secretKey, port } = require('./constants');
@@ -23,7 +22,6 @@ app.use(function (err, req, res, next) {
     res.status(401).json({ status: 'noAuth' });
   }
 });
-app.use(fileUpload({ createParentPath: true }));
 app.use('/', router);
 
 app.listen(port, () => {

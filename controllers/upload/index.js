@@ -1,44 +1,61 @@
 const moment = require('moment'); // require
-const fs = require('fs');
 const path = require('path');
-const { hostDomain, root } = require('../../constants');
+const Jimp = require('jimp');
+const formidable = require('formidable');
+const { root } = require('../../constants');
 const MediaModel = require('../../models/media');
 
 function index(req, res) {
   // console.log(req.files);
-  if (req.files.file) {
-    const sub = moment().format('YYYY/MM');
-    const dest = path.join('public', 'uploads', req.user.id, sub);
-    const fileName = Date.now() + '.jpg';
-    saveFile(req, res, dest, fileName);
-  } else {
-    res.status(404).send({ status: 'error' });
-  }
-}
-
-function saveFile(req, res, dest, fileName) {
-  const target = `${root}/${dest}/${fileName}`;
   const {
     user: { id },
-    body: { description = '' },
   } = req;
-  const clientPath = dest.replace(/\\/g, '/').replace('public', 'static');
-  return req.files.file
-    .mv(target)
-    .then(() => {
-      MediaModel.create({ fileName, description, path: clientPath, uploaderId: id, uploadedAt: Date.now() })
-        .then((result) => {
-          res.send(result);
-        })
-        .catch((err) => {
-          res.sendStatus(404);
-          console.error(err);
-        });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(404);
-    });
+  const form = formidable();
+  form.parse(req, (err, fields, files) => {
+    if (err) {
+      res.sendStatus(403);
+      return;
+    }
+    Jimp.read(files.file.path)
+      .then((img) => {
+        const target = path.join('public', 'uploads', id, moment().format('YYYY/MM'));
+        const fullPath = path.join(root, target);
+        const fileName = moment().valueOf();
+        const nameCropped = fileName + '-200x200';
+        const ext = '.jpg';
+        const prom1 = img.quality(70).write(fullPath + '/' + fileName + ext);
+        const prom2 = img
+          .quality(70)
+          .cover(200, 200)
+          .write(fullPath + '/' + nameCropped + ext);
+        Promise.all([prom1, prom2])
+          .then((results) => {
+            // console.log("🚀 ~ file: index.js ~ line 34 ~ .then ~ results", results)
+            const clientPath = target.replace('public', 'static').replace(/\\/g, '/');
+            const { description = '' } = fields;
+            MediaModel.create({
+              fileName,
+              description,
+              ext,
+              path: clientPath,
+              uploaderId: id,
+              uploadedAt: Date.now(),
+            })
+              .then((result) => {
+                res.json(result);
+              })
+              .catch((err) => {
+                res.sendStatus(403);
+              });
+          })
+          .catch((err) => {
+            res.sendStatus(403);
+          });
+      })
+      .catch((err) => {
+        res.sendStatus(403);
+      });
+  });
 }
 
 module.exports = { index };
