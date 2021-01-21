@@ -1,13 +1,13 @@
 const express = require('express');
 const userController = require('./controllers/user');
-const authController = require('./controllers/auth')
-const uploadController = require('./controllers/upload')
-const postController = require('./controllers/post')
+const authController = require('./controllers/auth');
+const uploadController = require('./controllers/upload');
+const postController = require('./controllers/post');
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  res.json({ status: 'success', message: 'Welcome to Kuskus Blog!' });
+  res.json({ message: 'Welcome to Kuskus Blog!' });
 });
 
 router.get('/users', userController.index);
