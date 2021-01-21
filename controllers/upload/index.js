@@ -1,42 +1,44 @@
 const moment = require('moment'); // require
 const fs = require('fs');
-const path = require('path')
+const path = require('path');
 const { hostDomain, root } = require('../../constants');
+const MediaModel = require('../../models/media');
 
 function index(req, res) {
   // console.log(req.files);
   if (req.files.file) {
-    const sub = moment().format('YYYY/MM')
-    const dest = path.join('public', 'uploads', req.user.id, sub,)
-    const fileName = Date.now() + '.jpg'
-    fs.access(dest, function (error) {
-      if (error) {
-        // console.log("Directory does not exist.", dest);
-        fs.mkdir(dest, { recursive: true }, (errorMkdir) => {
-          if (errorMkdir) {
-            // console.log('errormkdir');
-          } else {
-            saveFile(req, res, dest, fileName)
-          }
-        });
-      } else {
-        // console.log("Directory exists.", dest);
-        saveFile(req, res, dest, fileName)
-      }
-    });
-
+    const sub = moment().format('YYYY/MM');
+    const dest = path.join('public', 'uploads', req.user.id, sub);
+    const fileName = Date.now() + '.jpg';
+    saveFile(req, res, dest, fileName);
   } else {
-    res.status(404).send({ status: 'error' })
+    res.status(404).send({ status: 'error' });
   }
 }
 
 function saveFile(req, res, dest, fileName) {
-  const target = `${root}/${dest}/${fileName}`
-  return req.files.file.mv(target)
+  const target = `${root}/${dest}/${fileName}`;
+  const {
+    user: { id },
+    body: { description = '' },
+  } = req;
+  const clientPath = dest.replace(/\\/g, '/').replace('public', 'static');
+  return req.files.file
+    .mv(target)
     .then(() => {
-      res.send(`${hostDomain}/${dest.replace(/\\/g, '/').replace('public', 'static')}/${fileName}`)
+      MediaModel.create({ fileName, description, path: clientPath, uploaderId: id, uploadedAt: Date.now() })
+        .then((result) => {
+          res.send(result);
+        })
+        .catch((err) => {
+          res.sendStatus(404);
+          console.error(err);
+        });
     })
-    .catch(err => console.error(err))
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(404);
+    });
 }
 
-module.exports = { index }
+module.exports = { index };
