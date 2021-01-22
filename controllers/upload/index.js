@@ -14,7 +14,7 @@ function index(req, res) {
   const form = formidable();
   form.parse(req, (err, fields, files) => {
     if (err) {
-      console.log("🚀 ~ file: index.js ~ line 17 ~ form.parse ~ err", err)
+      console.log('🚀 ~ file: index.js ~ line 17 ~ form.parse ~ err', err);
       res.sendStatus(403);
       return;
     }
@@ -23,7 +23,7 @@ function index(req, res) {
         const target = path.join(cloudinaryCloudFolder, id, moment().format('YYYY/MM')).replace(/\\/g, '/');
         const prom1 = img.quality(70).getBase64Async(Jimp.AUTO);
         // const prom2 = img.quality(70).cover(200, 200).getBase64Async(Jimp.AUTO);
-        Promise.all([prom1/* , prom2 */])
+        Promise.all([prom1 /* , prom2 */])
           .then((results) => {
             const { description = '' } = fields;
             const uploadProms = results.map((val) => cloudinary.uploader.upload(val, { folder: target }));
@@ -60,12 +60,12 @@ function index(req, res) {
               // });
           })
           .catch((err) => {
-            console.log("🚀 ~ file: index.js ~ line 52 ~ .then ~ err", err)
+            console.log('🚀 ~ file: index.js ~ line 52 ~ .then ~ err', err);
             res.sendStatus(403);
           });
       })
       .catch((err) => {
-        console.log("🚀 ~ file: index.js ~ line 56 ~ form.parse ~ err", err)
+        console.log('🚀 ~ file: index.js ~ line 56 ~ form.parse ~ err', err);
         res.sendStatus(403);
       });
   });
@@ -86,10 +86,8 @@ function public(req, res) {
           .quality(70)
           .getBase64Async(Jimp.AUTO)
           .then((result) => {
-            Promise.all([
-              cloudinary.uploader.upload(result, { folder: target }),
-              cloudinary.uploader.upload(result, { folder: 'instance2promise' }),
-            ])
+            const promises = [result, result].map((val) => cloudinary.uploader.upload(val, { folder: target }));
+            Promise.all(promises)
               .then((cloudRes) => {
                 res.json({ cloudRes });
               })
