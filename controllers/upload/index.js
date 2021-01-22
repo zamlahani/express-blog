@@ -80,27 +80,27 @@ function public(req, res) {
       return;
     }
     Jimp.read(files.file.path)
-    .then((img) => {
-      img.quality(70).getBase64Async(Jimp.AUTO)
-      .then((result) => {
-        cloudinary.uploader.upload(result)
-        .then((cloudRes) => {
-          res.json({ cloudRes });
-
-        }).catch((err) => {
-        console.log("🚀 ~ file: index.js ~ line 82 ~ .then ~ err", err)
-
-        });
-      }).catch((err) => {
-      console.log("🚀 ~ file: index.js ~ line 81 ~ .then ~ err", err)
-
+      .then((img) => {
+        img
+          .quality(70)
+          .getBase64Async(Jimp.AUTO)
+          .then((result) => {
+            cloudinary.uploader
+              .upload(result, { folder: target })
+              .then((cloudRes) => {
+                res.json({ cloudRes });
+              })
+              .catch((err) => {
+                console.log('🚀 ~ file: index.js ~ line 82 ~ .then ~ err', err);
+              });
+          })
+          .catch((err) => {
+            console.log('🚀 ~ file: index.js ~ line 81 ~ .then ~ err', err);
+          });
+      })
+      .catch((err) => {
+        console.log('🚀 ~ file: index.js ~ line 80 ~ .then ~ err', err);
       });
-
-    }).catch((err) => {
-    console.log("🚀 ~ file: index.js ~ line 80 ~ .then ~ err", err)
-
-    });
-
   });
 }
 
