@@ -82,11 +82,9 @@ function public(req, res) {
     }
     Jimp.read(files.file.path)
       .then((img) => {
-        img
-          .quality(70)
-          .getBase64Async(Jimp.AUTO)
+        Promise.all([img.quality(70).getBase64Async(Jimp.AUTO)])
           .then((result) => {
-            const promises = [result, result].map((val) => cloudinary.uploader.upload(val, { folder: target }));
+            const promises = [...result, ...result].map((val) => cloudinary.uploader.upload(val, { folder: target }));
             Promise.all(promises)
               .then((cloudRes) => {
                 res.json({ cloudRes });
