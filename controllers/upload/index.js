@@ -57,4 +57,15 @@ function index(req, res) {
   });
 }
 
-module.exports = { index };
+function public(req, res) {
+  const form = formidable();
+  form.parse(req, (err, fields, files) => {
+    if (err) {
+      res.status(403).send({ err });
+      return;
+    }
+    res.json({ files });
+  });
+}
+
+module.exports = { index, public };
