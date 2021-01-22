@@ -2,8 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const jwt = require('express-jwt');
 const path = require('path');
+const cloudinary = require('cloudinary').v2;
 const router = require('./router');
-const { secretKey, dbUrl } = require('./constants');
+const { secretKey, dbUrl, cloudinaryCloudName, cloudinaryKey, cloudinarySecret } = require('./constants');
 const app = express();
 const port = +process.env.PORT || 8080;
 
@@ -12,6 +13,12 @@ mongoose.connect(dbUrl, {
   useUnifiedTopology: true,
   useCreateIndex: true,
   useFindAndModify: false,
+});
+
+cloudinary.config({
+  cloud_name: cloudinaryCloudName,
+  api_key: cloudinaryKey,
+  api_secret: cloudinarySecret,
 });
 
 app.use('/static', express.static(path.join(__dirname, 'public')));
