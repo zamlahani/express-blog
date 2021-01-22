@@ -14,7 +14,6 @@ function index(req, res) {
   const form = formidable();
   form.parse(req, (err, fields, files) => {
     if (err) {
-      console.log('🚀 ~ file: index.js ~ line 17 ~ form.parse ~ err', err);
       res.sendStatus(403);
       return;
     }
@@ -22,51 +21,37 @@ function index(req, res) {
       .then((img) => {
         const target = path.join(cloudinaryCloudFolder, id, moment().format('YYYY/MM')).replace(/\\/g, '/');
         const prom1 = img.quality(70).getBase64Async(Jimp.AUTO);
-        // const prom2 = img.quality(70).cover(200, 200).getBase64Async(Jimp.AUTO);
-        Promise.all([prom1 /* , prom2 */])
+        const prom2 = img.quality(70).cover(200, 200).getBase64Async(Jimp.AUTO);
+        Promise.all([prom1 , prom2])
           .then((results) => {
             const { description = '' } = fields;
             const uploadProms = results.map((val) => cloudinary.uploader.upload(val, { folder: target }));
-            cloudinary.uploader
-              .upload(results[0])
+            Promise.all(uploadProms)
               .then((upRes) => {
-                res.json({ upRes });
+                Media.create({
+                  description,
+                  uploaderId: id,
+                  files: {
+                    original: upRes[0],
+                    thumbnail: upRes[1],
+                  },
+                })
+                  .then((modelRes) => {
+                    res.json(modelRes);
+                  })
+                  .catch((err) => {
+                    res.sendStatus(403);
+                  });
               })
               .catch((err) => {
-                console.log('🚀 ~ file: index.js ~ line 41 ~ .then ~ err', err);
+                res.sendStatus(403);
               });
-            // Promise.all([])
-            //   .then((upRes) => {
-            //     console.log("🚀 ~ file: index.js ~ line 32 ~ .then ~ upRes", upRes)
-            //     res.json({upRes})
-            // Media.create({
-            //   description,
-            //   uploaderId: id,
-            //   files: {
-            //     original: upRes[0],
-            //     thumbnail: upRes[1],
-            //   },
-            // })
-            //   .then((modelRes) => {
-            //     res.json(modelRes);
-            //   })
-            //   .catch((err) => {
-            //     console.log("🚀 ~ file: index.js ~ line 44 ~ .then ~ err", err)
-            //     res.sendStatus(403);
-            //   });
-            // })
-            // .catch((err) => {
-            //   console.log("🚀 ~ file: index.js ~ line 48 ~ .then ~ err", err)
-            //   res.sendStatus(403);
-            // });
           })
           .catch((err) => {
-            console.log('🚀 ~ file: index.js ~ line 52 ~ .then ~ err', err);
             res.sendStatus(403);
           });
       })
       .catch((err) => {
-        console.log('🚀 ~ file: index.js ~ line 56 ~ form.parse ~ err', err);
         res.sendStatus(403);
       });
   });
