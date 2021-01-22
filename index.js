@@ -24,7 +24,7 @@ cloudinary.config({
 app.use('/static', express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(jwt({ secret: secretKey, algorithms: ['HS256'] }).unless({ path: ['/', '/auth/login', '/upload/public'] }));
+app.use(jwt({ secret: secretKey, algorithms: ['HS256'] }).unless({ path: ['/', '/auth/login'] }));
 app.use(function (err, req, res, next) {
   if (err.name === 'UnauthorizedError') {
     res.status(401).json({ status: 'noAuth' });
