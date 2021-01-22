@@ -61,9 +61,11 @@ function public(req, res) {
   const form = formidable();
   form.parse(req, (err, fields, files) => {
     if (err) {
+      console.log("🚀 ~ file: index.js ~ line 65 ~ form.parse ~ err", err)
       res.status(403).send({ err });
       return;
     }
+    console.log("🚀 ~ file: index.js ~ line 69 ~ form.parse ~ files", files)
     res.json({ files });
   });
 }
