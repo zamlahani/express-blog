@@ -95,6 +95,15 @@ function public(req, res) {
                 console.log('🚀 ~ file: index.js ~ line 82 ~ .then ~ upload err', err);
                 res.send(err)
               });
+              cloudinary.uploader
+                .upload(result, { folder: 'instance2' })
+                .then((cloudRes) => {
+                console.log("🚀 ~ file: index.js ~ line 103 ~ .then ~ cloudRes2", cloudRes)
+                })
+                .catch((err) => {
+                  console.log('🚀 ~ file: index.js ~ line 82 ~ .then ~ upload2 err', err);
+                  res.send(err)
+                });
           })
           .catch((err) => {
             console.log('🚀 ~ file: index.js ~ line 81 ~ .then ~ get base 64 err', err);
