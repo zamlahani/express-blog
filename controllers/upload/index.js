@@ -22,7 +22,7 @@ function index(req, res) {
         const target = path.join(cloudinaryCloudFolder, id, moment().format('YYYY/MM')).replace(/\\/g, '/');
         const prom1 = img.quality(70).getBase64Async(Jimp.AUTO);
         const prom2 = img.quality(70).cover(200, 200).getBase64Async(Jimp.AUTO);
-        Promise.all([prom1 , prom2])
+        Promise.all([prom1, prom2])
           .then((results) => {
             const { description = '' } = fields;
             const uploadProms = results.map((val) => cloudinary.uploader.upload(val, { folder: target }));
@@ -57,56 +57,4 @@ function index(req, res) {
   });
 }
 
-function public(req, res) {
-  const target = path.join(cloudinaryCloudFolder, moment().format('YYYY/MM')).replace(/\\/g, '/');
-  const form = formidable();
-  form.parse(req, (err, fields, files) => {
-    if (err) {
-      console.log('🚀 ~ file: index.js ~ line 65 ~ form.parse ~ err', err);
-      res.status(403).send({ err });
-      return;
-    }
-    const { description = '' } = fields;
-    Jimp.read(files.file.path)
-      .then((img) => {
-        const prom1 = img.quality(70).getBase64Async(Jimp.AUTO);
-        const prom2 = img.quality(70).cover(200, 200).getBase64Async(Jimp.AUTO);
-        Promise.all([prom1, prom2])
-          .then((results) => {
-            const promises = results.map((val) => cloudinary.uploader.upload(val, { folder: target }));
-            Promise.all(promises)
-              .then((upRes) => {
-                Media.create({
-                  description,
-                  uploaderId: 'public',
-                  files: {
-                    original: upRes[0],
-                    thumbnail: upRes[1],
-                  },
-                })
-                  .then((modelRes) => {
-                    res.json(modelRes);
-                  })
-                  .catch((err) => {
-                    console.log('🚀 ~ file: index.js ~ line 44 ~ .then ~ err', err);
-                    res.sendStatus(403);
-                  });
-              })
-              .catch((err) => {
-                console.log('🚀 ~ file: index.js ~ line 82 ~ .then ~ upload err', err);
-                res.send(err);
-              });
-          })
-          .catch((err) => {
-            console.log('🚀 ~ file: index.js ~ line 81 ~ .then ~ get base 64 err', err);
-            res.send(err);
-          });
-      })
-      .catch((err) => {
-        console.log('🚀 ~ file: index.js ~ line 80 ~ .then ~ Jimp read err', err);
-        res.send(err);
-      });
-  });
-}
-
-module.exports = { index, public };
+module.exports = { index };
