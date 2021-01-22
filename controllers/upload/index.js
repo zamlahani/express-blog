@@ -27,7 +27,7 @@ function index(req, res) {
           .then((results) => {
             const { description = '' } = fields;
             const uploadProms = results.map((val) => cloudinary.uploader.upload(val, { folder: target }));
-            Promise.all(uploadProms)
+            Promise.all([cloudinary.uploader.upload(results[0])])
               .then((upRes) => {
                 console.log("🚀 ~ file: index.js ~ line 32 ~ .then ~ upRes", upRes)
                 res.json({upRes})
