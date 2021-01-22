@@ -14,6 +14,7 @@ function index(req, res) {
   const form = formidable();
   form.parse(req, (err, fields, files) => {
     if (err) {
+      console.log("🚀 ~ file: index.js ~ line 17 ~ form.parse ~ err", err)
       res.sendStatus(403);
       return;
     }
@@ -40,18 +41,22 @@ function index(req, res) {
                     res.json(modelRes);
                   })
                   .catch((err) => {
+                    console.log("🚀 ~ file: index.js ~ line 44 ~ .then ~ err", err)
                     res.sendStatus(403);
                   });
               })
               .catch((err) => {
+                console.log("🚀 ~ file: index.js ~ line 48 ~ .then ~ err", err)
                 res.sendStatus(403);
               });
           })
           .catch((err) => {
+            console.log("🚀 ~ file: index.js ~ line 52 ~ .then ~ err", err)
             res.sendStatus(403);
           });
       })
       .catch((err) => {
+        console.log("🚀 ~ file: index.js ~ line 56 ~ form.parse ~ err", err)
         res.sendStatus(403);
       });
   });
