@@ -74,9 +74,14 @@ function public(req, res) {
     .then((img) => {
       img.quality(70).getBase64Async(Jimp.AUTO)
       .then((result) => {
-        console.log("🚀 ~ file: index.js ~ line 78 ~ .then ~ result", result)
-        res.json({ result });
+        cloudinary.uploader.upload(result)
+        .then((cloudRes) => {
+          res.json({ cloudRes });
 
+        }).catch((err) => {
+        console.log("🚀 ~ file: index.js ~ line 82 ~ .then ~ err", err)
+
+        });
       }).catch((err) => {
       console.log("🚀 ~ file: index.js ~ line 81 ~ .then ~ err", err)
 
