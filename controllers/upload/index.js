@@ -29,21 +29,23 @@ function index(req, res) {
             const uploadProms = results.map((val) => cloudinary.uploader.upload(val, { folder: target }));
             Promise.all(uploadProms)
               .then((upRes) => {
-                Media.create({
-                  description,
-                  uploaderId: id,
-                  files: {
-                    original: upRes[0],
-                    thumbnail: upRes[1],
-                  },
-                })
-                  .then((modelRes) => {
-                    res.json(modelRes);
-                  })
-                  .catch((err) => {
-                    console.log("🚀 ~ file: index.js ~ line 44 ~ .then ~ err", err)
-                    res.sendStatus(403);
-                  });
+                console.log("🚀 ~ file: index.js ~ line 32 ~ .then ~ upRes", upRes)
+                res.json({upRes})
+                // Media.create({
+                //   description,
+                //   uploaderId: id,
+                //   files: {
+                //     original: upRes[0],
+                //     thumbnail: upRes[1],
+                //   },
+                // })
+                //   .then((modelRes) => {
+                //     res.json(modelRes);
+                //   })
+                //   .catch((err) => {
+                //     console.log("🚀 ~ file: index.js ~ line 44 ~ .then ~ err", err)
+                //     res.sendStatus(403);
+                //   });
               })
               .catch((err) => {
                 console.log("🚀 ~ file: index.js ~ line 48 ~ .then ~ err", err)
