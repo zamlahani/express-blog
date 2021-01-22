@@ -27,37 +27,38 @@ function index(req, res) {
           .then((results) => {
             const { description = '' } = fields;
             const uploadProms = results.map((val) => cloudinary.uploader.upload(val, { folder: target }));
-            cloudinary.uploader.upload(results[0])
-            .then((upRes) => {
-              res.json({upRes})
-            }).catch((err) => {
-
-              console.log("🚀 ~ file: index.js ~ line 41 ~ .then ~ err", err)
-            });
+            cloudinary.uploader
+              .upload(results[0])
+              .then((upRes) => {
+                res.json({ upRes });
+              })
+              .catch((err) => {
+                console.log('🚀 ~ file: index.js ~ line 41 ~ .then ~ err', err);
+              });
             // Promise.all([])
             //   .then((upRes) => {
             //     console.log("🚀 ~ file: index.js ~ line 32 ~ .then ~ upRes", upRes)
             //     res.json({upRes})
-                // Media.create({
-                //   description,
-                //   uploaderId: id,
-                //   files: {
-                //     original: upRes[0],
-                //     thumbnail: upRes[1],
-                //   },
-                // })
-                //   .then((modelRes) => {
-                //     res.json(modelRes);
-                //   })
-                //   .catch((err) => {
-                //     console.log("🚀 ~ file: index.js ~ line 44 ~ .then ~ err", err)
-                //     res.sendStatus(403);
-                //   });
-              // })
-              // .catch((err) => {
-              //   console.log("🚀 ~ file: index.js ~ line 48 ~ .then ~ err", err)
-              //   res.sendStatus(403);
-              // });
+            // Media.create({
+            //   description,
+            //   uploaderId: id,
+            //   files: {
+            //     original: upRes[0],
+            //     thumbnail: upRes[1],
+            //   },
+            // })
+            //   .then((modelRes) => {
+            //     res.json(modelRes);
+            //   })
+            //   .catch((err) => {
+            //     console.log("🚀 ~ file: index.js ~ line 44 ~ .then ~ err", err)
+            //     res.sendStatus(403);
+            //   });
+            // })
+            // .catch((err) => {
+            //   console.log("🚀 ~ file: index.js ~ line 48 ~ .then ~ err", err)
+            //   res.sendStatus(403);
+            // });
           })
           .catch((err) => {
             console.log('🚀 ~ file: index.js ~ line 52 ~ .then ~ err', err);
@@ -82,9 +83,11 @@ function public(req, res) {
     }
     Jimp.read(files.file.path)
       .then((img) => {
-        Promise.all([img.quality(70).getBase64Async(Jimp.AUTO)])
-          .then((result) => {
-            const promises = [...result, ...result].map((val) => cloudinary.uploader.upload(val, { folder: target }));
+        const prom1 = img.quality(70).getBase64Async(Jimp.AUTO);
+        const prom2 = img.quality(70).cover(200, 200).getBase64Async(Jimp.AUTO);
+        Promise.all([prom1, prom2])
+          .then((results) => {
+            const promises = results.map((val) => cloudinary.uploader.upload(val, { folder: target }));
             Promise.all(promises)
               .then((cloudRes) => {
                 res.json({ cloudRes });
