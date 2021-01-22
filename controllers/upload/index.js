@@ -81,6 +81,7 @@ function public(req, res) {
       res.status(403).send({ err });
       return;
     }
+    const { description = '' } = fields;
     Jimp.read(files.file.path)
       .then((img) => {
         const prom1 = img.quality(70).getBase64Async(Jimp.AUTO);
@@ -89,8 +90,22 @@ function public(req, res) {
           .then((results) => {
             const promises = results.map((val) => cloudinary.uploader.upload(val, { folder: target }));
             Promise.all(promises)
-              .then((cloudRes) => {
-                res.json({ cloudRes });
+              .then((upRes) => {
+                Media.create({
+                  description,
+                  uploaderId: 'public',
+                  files: {
+                    original: upRes[0],
+                    thumbnail: upRes[1],
+                  },
+                })
+                  .then((modelRes) => {
+                    res.json(modelRes);
+                  })
+                  .catch((err) => {
+                    console.log('🚀 ~ file: index.js ~ line 44 ~ .then ~ err', err);
+                    res.sendStatus(403);
+                  });
               })
               .catch((err) => {
                 console.log('🚀 ~ file: index.js ~ line 82 ~ .then ~ upload err', err);
