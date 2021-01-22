@@ -86,33 +86,26 @@ function public(req, res) {
           .quality(70)
           .getBase64Async(Jimp.AUTO)
           .then((result) => {
-            cloudinary.uploader
-              .upload(result, { folder: target })
+            Promise.all([
+              cloudinary.uploader.upload(result, { folder: target }),
+              cloudinary.uploader.upload(result, { folder: 'instance2promise' }),
+            ])
               .then((cloudRes) => {
                 res.json({ cloudRes });
               })
               .catch((err) => {
                 console.log('🚀 ~ file: index.js ~ line 82 ~ .then ~ upload err', err);
-                res.send(err)
+                res.send(err);
               });
-              cloudinary.uploader
-                .upload(result, { folder: 'instance2' })
-                .then((cloudRes) => {
-                console.log("🚀 ~ file: index.js ~ line 103 ~ .then ~ cloudRes2", cloudRes)
-                })
-                .catch((err) => {
-                  console.log('🚀 ~ file: index.js ~ line 82 ~ .then ~ upload2 err', err);
-                  res.send(err)
-                });
           })
           .catch((err) => {
             console.log('🚀 ~ file: index.js ~ line 81 ~ .then ~ get base 64 err', err);
-            res.send(err)
+            res.send(err);
           });
       })
       .catch((err) => {
         console.log('🚀 ~ file: index.js ~ line 80 ~ .then ~ Jimp read err', err);
-        res.send(err)
+        res.send(err);
       });
   });
 }
