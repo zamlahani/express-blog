@@ -70,8 +70,16 @@ function public(req, res) {
       res.status(403).send({ err });
       return;
     }
-    console.log("🚀 ~ file: index.js ~ line 69 ~ form.parse ~ files", files)
-    res.json({ files });
+    Jimp.read(files.file.path)
+    .then((img) => {
+      console.log("🚀 ~ file: index.js ~ line 76 ~ .then ~ img", img)
+      res.json({ img });
+
+    }).catch((err) => {
+    console.log("🚀 ~ file: index.js ~ line 80 ~ .then ~ err", err)
+
+    });
+
   });
 }
 
