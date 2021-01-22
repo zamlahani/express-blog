@@ -22,8 +22,8 @@ function index(req, res) {
       .then((img) => {
         const target = path.join(cloudinaryCloudFolder, id, moment().format('YYYY/MM')).replace(/\\/g, '/');
         const prom1 = img.quality(70).getBase64Async(Jimp.AUTO);
-        const prom2 = img.quality(70).cover(200, 200).getBase64Async(Jimp.AUTO);
-        Promise.all([prom1, prom2])
+        // const prom2 = img.quality(70).cover(200, 200).getBase64Async(Jimp.AUTO);
+        Promise.all([prom1/* , prom2 */])
           .then((results) => {
             const { description = '' } = fields;
             const uploadProms = results.map((val) => cloudinary.uploader.upload(val, { folder: target }));
