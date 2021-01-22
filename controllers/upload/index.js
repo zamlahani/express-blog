@@ -72,8 +72,15 @@ function public(req, res) {
     }
     Jimp.read(files.file.path)
     .then((img) => {
-      console.log("🚀 ~ file: index.js ~ line 76 ~ .then ~ img", img)
-      res.json({ img });
+      img.quality(70).getBase64Async(Jimp.AUTO)
+      .then((result) => {
+        console.log("🚀 ~ file: index.js ~ line 78 ~ .then ~ result", result)
+        res.json({ result });
+
+      }).catch((err) => {
+      console.log("🚀 ~ file: index.js ~ line 81 ~ .then ~ err", err)
+
+      });
 
     }).catch((err) => {
     console.log("🚀 ~ file: index.js ~ line 80 ~ .then ~ err", err)
