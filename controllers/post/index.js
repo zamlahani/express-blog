@@ -5,7 +5,9 @@ const Post = require('../../models/post');
 function index(req, res) {
   // console.log(req.user);
   Promise.all([
-    Post.find({}).select('_id title body slug createdAt lastModified').populate('author'),
+    Post.find({})
+      .select('_id title body slug createdAt lastModified')
+      .populate({ path: 'author', select: 'username fullName id' }),
     Post.estimatedDocumentCount(),
   ])
     .then((results) => {
