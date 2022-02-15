@@ -19,37 +19,28 @@ function index(req, res) {
     }
     Jimp.read(files.file.path)
       .then((img) => {
-        const target = path.join(cloudinaryCloudFolder, id, moment().format('YYYY/MM')).replace(/\\/g, '/');
         const prom1 = img.quality(70).getBase64Async(Jimp.AUTO);
         const prom2 = img.quality(70).cover(200, 200).getBase64Async(Jimp.AUTO);
-        Promise.all([prom1, prom2])
-          .then((results) => {
-            const { description = '' } = fields;
-            const uploadProms = results.map((val) => cloudinary.uploader.upload(val, { folder: target }));
-            Promise.all(uploadProms)
-              .then((upRes) => {
-                Media.create({
-                  description,
-                  uploaderId: id,
-                  files: {
-                    original: upRes[0],
-                    thumbnail: upRes[1],
-                  },
-                })
-                  .then((modelRes) => {
-                    res.json(modelRes);
-                  })
-                  .catch((err) => {
-                    res.sendStatus(403);
-                  });
-              })
-              .catch((err) => {
-                res.sendStatus(403);
-              });
-          })
-          .catch((err) => {
-            res.sendStatus(403);
-          });
+        return Promise.all([prom1, prom2]);
+      })
+      .then((results) => {
+        const target = path.join(cloudinaryCloudFolder, id, moment().format('YYYY/MM')).replace(/\\/g, '/');
+        const uploadProms = results.map((val) => cloudinary.uploader.upload(val, { folder: target }));
+        return Promise.all(uploadProms);
+      })
+      .then((upRes) => {
+        const { description = '' } = fields;
+        return Media.create({
+          description,
+          uploaderId: id,
+          files: {
+            original: upRes[0],
+            thumbnail: upRes[1],
+          },
+        });
+      })
+      .then((modelRes) => {
+        res.json(modelRes);
       })
       .catch((err) => {
         res.sendStatus(403);
