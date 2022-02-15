@@ -14,11 +14,14 @@ function index(req, res) {
   const form = formidable();
   form.parse(req, (err, fields, files) => {
     if (err) {
+      console.log('1', err.response);
       res.sendStatus(403);
       return;
     }
-    Jimp.read(files.file.path)
+    // console.log('~ files', files);
+    return Jimp.read(files.file.filepath)
       .then((img) => {
+        // console.log('~ img', img)
         const prom1 = img.quality(70).getBase64Async(Jimp.AUTO);
         const prom2 = img.quality(70).cover(200, 200).getBase64Async(Jimp.AUTO);
         return Promise.all([prom1, prom2]);
@@ -43,6 +46,7 @@ function index(req, res) {
         res.json(modelRes);
       })
       .catch((err) => {
+        console.log(2, err);
         res.sendStatus(403);
       });
   });
