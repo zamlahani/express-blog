@@ -12,10 +12,14 @@ router.get('/', (req, res) => {
 
 router.get('/users', userController.index);
 router.post('/users', userController.store);
+router.post('/users/register', userController.store);
 router.put('/users/:id', userController.update);
 router.put('/change-password/:id', userController.changePassword);
+
 router.post('/auth/login', authController.login);
+
 router.post('/upload', uploadController.index);
+
 router.get('/posts', postController.index);
 router.get('/posts/:id', postController.show);
 router.post('/posts', postController.store);

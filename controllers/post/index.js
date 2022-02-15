@@ -3,15 +3,18 @@ const sanitizeHtml = require('sanitize-html');
 const Post = require('../../models/post');
 
 function index(req, res) {
-  const {
-    user: { id },
-  } = req;
   // console.log(req.user);
-  Post.find({ authorId: id })
-    .then((result) => {
-      res.json(result);
+  Promise.all([
+    Post.find({}).select('_id title body slug authorId createdAt lastModified'),
+    Post.estimatedDocumentCount(),
+  ])
+    .then((results) => {
+      const [posts, count] = results;
+      res.json({ count, posts });
     })
-    .catch((err) => console.error(err));
+    .catch((err) => {
+      res.sendStatus(403);
+    });
 }
 
 function show(req, res) {

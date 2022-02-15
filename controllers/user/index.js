@@ -4,8 +4,14 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 async function index(req, res) {
-  const result = await User.find({});
-  res.json(result.map(({ fullName, username, _id }) => ({ fullName, username, _id })));
+  Promise.all([User.find({}).select('fullName username _id'), User.estimatedDocumentCount()])
+    .then((results) => {
+      const [users, count] = results;
+      res.json({ count, users });
+    })
+    .catch((err) => {
+      res.sendStatus(403);
+    });
   // console.log(req.user);
 }
 
