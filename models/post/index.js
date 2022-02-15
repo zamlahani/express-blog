@@ -6,7 +6,7 @@ const postSchema = new mongoose.Schema({
   slug: { type: String, unique: true, required: true },
   createdAt: { type: Date, default: Date.now, required: true, immutable: true },
   lastModified: { type: Date, default: Date.now, required: true },
-  authorId: { type: String, required: true, immutable: true },
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 });
 
 const Post = mongoose.model('Post', postSchema);

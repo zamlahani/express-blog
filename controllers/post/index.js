@@ -5,7 +5,7 @@ const Post = require('../../models/post');
 function index(req, res) {
   // console.log(req.user);
   Promise.all([
-    Post.find({}).select('_id title body slug authorId createdAt lastModified'),
+    Post.find({}).select('_id title body slug createdAt lastModified').populate('author'),
     Post.estimatedDocumentCount(),
   ])
     .then((results) => {
@@ -13,6 +13,7 @@ function index(req, res) {
       res.json({ count, posts });
     })
     .catch((err) => {
+      // console.log('~ err', err)
       res.sendStatus(403);
     });
 }
@@ -58,7 +59,7 @@ async function store(req, res) {
       title,
       body: cleanBody,
       slug: slugged,
-      authorId: id,
+      author: id,
       createdAt: Date.now(),
       lastModified: Date.now(),
     })
